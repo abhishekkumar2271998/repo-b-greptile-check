@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FileText, Mic, PencilLine, RefreshCw, Search, Sparkles, Square, X } from 'lucide-react';
+import { FileText, Globe, Mail, Mic, PencilLine, Phone, RefreshCw, Search, Sparkles, Square, X } from 'lucide-react';
 import { MeetingsShell } from '@/components/MeetingsShell';
 import { UpcomingCard } from '@/components/home/UpcomingCard';
 import { PreviousRow } from '@/components/home/PreviousRow';
@@ -251,6 +251,8 @@ export function Home({ mode }: HomeProps) {
               ))
             )}
           </section>
+
+          {mode === 'home' && <ContactInfo />}
         </>
       )}
     </MeetingsShell>
@@ -364,6 +366,78 @@ function AboutSteps() {
           </li>
         ))}
       </ol>
+    </section>
+  );
+}
+
+interface Contact {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href: string;
+}
+
+const CONTACTS: Contact[] = [
+  {
+    icon: <Mail className="size-[16px]" />,
+    label: 'Email',
+    value: 'support@stenoai.app',
+    href: 'mailto:support@stenoai.app',
+  },
+  {
+    icon: <Phone className="size-[16px]" />,
+    label: 'Phone',
+    value: '+1 (555) 010-2024',
+    href: 'tel:+15550102024',
+  },
+  {
+    icon: <Globe className="size-[16px]" />,
+    label: 'Website',
+    value: 'stenoai.app',
+    href: 'https://stenoai.app',
+  },
+];
+
+// Contact section shown on the home view — a quiet card listing ways to reach
+// support, following the same paper/ink styling as the rest of the home page.
+function ContactInfo() {
+  return (
+    <section className="mt-10">
+      <SectionHead title="Contact" count={CONTACTS.length} />
+      <div className="flex flex-col gap-2">
+        {CONTACTS.map((c) => (
+          <a
+            key={c.label}
+            href={c.href}
+            className="flex items-center gap-4 rounded-lg p-4 transition-colors hover:bg-[color:var(--surface-hover)]"
+            style={{
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div
+              className="flex size-9 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'var(--surface-hover)', color: 'var(--fg-1)' }}
+            >
+              {c.icon}
+            </div>
+            <div className="min-w-0">
+              <div
+                className="text-[12px] font-medium tracking-[0.02em]"
+                style={{ color: 'var(--fg-muted)' }}
+              >
+                {c.label}
+              </div>
+              <div
+                className="mt-0.5 text-sm"
+                style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+              >
+                {c.value}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
     </section>
   );
 }
