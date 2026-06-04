@@ -252,6 +252,8 @@ export function Home({ mode }: HomeProps) {
             )}
           </section>
 
+          {mode === 'home' && <ProjectInfo />}
+
           {mode === 'home' && <ContactInfo />}
         </>
       )}
@@ -397,6 +399,35 @@ const CONTACTS: Contact[] = [
     href: 'https://stenoai.app',
   },
 ];
+
+// About-the-project section shown on the home view — a short paragraph
+// describing what StenoAI is, following the paper/ink styling of the page.
+function ProjectInfo() {
+  return (
+    <section className="mt-10">
+      <SectionHead title="About the project" count={0} />
+      <div
+        className="rounded-lg p-5"
+        style={{
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <p
+          className="text-[13.5px] leading-[1.65]"
+          style={{ color: 'var(--fg-2)' }}
+        >
+          StenoAI is a privacy-first meeting companion that records, transcribes,
+          and summarizes your conversations entirely on your own Mac. Audio is
+          captured locally, transcribed with Whisper, and turned into clean notes
+          and answers by an on-device model — nothing is ever uploaded to the
+          cloud. The result is a fast, fully offline way to capture beautiful
+          notes from any meeting while keeping your data in your hands.
+        </p>
+      </div>
+    </section>
+  );
+}
 
 // Contact section shown on the home view — a quiet card listing ways to reach
 // support, following the same paper/ink styling as the rest of the home page.
