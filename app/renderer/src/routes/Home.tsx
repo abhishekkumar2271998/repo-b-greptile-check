@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PencilLine, RefreshCw, Search, Square, X } from 'lucide-react';
+import { FileText, Mic, PencilLine, RefreshCw, Search, Sparkles, Square, X } from 'lucide-react';
 import { MeetingsShell } from '@/components/MeetingsShell';
 import { UpcomingCard } from '@/components/home/UpcomingCard';
 import { PreviousRow } from '@/components/home/PreviousRow';
@@ -126,6 +126,7 @@ export function Home({ mode }: HomeProps) {
               <span>from anywhere</span>
             </p>
           </div>
+          <AboutSteps />
         </div>
       ) : (
         <>
@@ -284,6 +285,86 @@ function SectionHead({ title, count, action }: SectionHeadProps) {
       </div>
       {action}
     </div>
+  );
+}
+
+interface Step {
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+}
+
+const ABOUT_STEPS: Step[] = [
+  {
+    icon: <Mic className="size-[18px]" />,
+    title: 'Record',
+    body: 'Capture any meeting in one click — or start from anywhere with ⌘⇧R. Mic and system audio are both captured.',
+  },
+  {
+    icon: <FileText className="size-[18px]" />,
+    title: 'Transcribe',
+    body: 'Audio is transcribed locally on your Mac with Whisper. Nothing is uploaded — it never leaves the device.',
+  },
+  {
+    icon: <Sparkles className="size-[18px]" />,
+    title: 'Summarize',
+    body: 'Get clean notes, summaries, and answers from an on-device model. Ask questions across all your meetings.',
+  },
+];
+
+// About section shown on the empty/welcome state — explains what StenoAI does
+// in three on-device steps so first-time users understand the flow.
+function AboutSteps() {
+  return (
+    <section className="mt-12 w-full max-w-[640px] text-left">
+      <h2
+        className="mb-5 text-center text-sm font-medium tracking-[-0.005em]"
+        style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+      >
+        How StenoAI works
+      </h2>
+      <ol className="flex flex-col gap-3">
+        {ABOUT_STEPS.map((step, i) => (
+          <li
+            key={step.title}
+            className="flex items-start gap-4 rounded-lg p-4"
+            style={{
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div
+              className="flex size-9 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'var(--surface-hover)', color: 'var(--fg-1)' }}
+            >
+              {step.icon}
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-2">
+                <span
+                  className="text-[12px] tabular-nums font-medium"
+                  style={{ color: 'var(--fg-muted)' }}
+                >
+                  {i + 1}
+                </span>
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+                >
+                  {step.title}
+                </h3>
+              </div>
+              <p
+                className="mt-1 text-[13px] leading-[1.55]"
+                style={{ color: 'var(--fg-2)' }}
+              >
+                {step.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
