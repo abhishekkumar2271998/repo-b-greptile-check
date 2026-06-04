@@ -26,7 +26,14 @@ class ConfigStoragePathTests(unittest.TestCase):
             self.assertTrue(success)
             self.assertEqual(config.get_storage_path(), "")
 
-
+class ConfigLanguageFallbackTests(unittest.TestCase):
+    def test_get_language_falls_back_to_auto_when_stored_value_unsupported(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config = Config(config_path=Path(tmp_dir) / "config.json")
+            # Simulate a hand-edited config with an unsupported language code
+            config._config["language"] = "xx"
+            self.assertEqual(config.get_language(), "auto")
+            self.assertEqual(config.get_language_name("xx"), "Unknown (xx)")
 class ConfigLanguageTests(unittest.TestCase):
     def test_set_language_accepts_supported_dutch_code(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
