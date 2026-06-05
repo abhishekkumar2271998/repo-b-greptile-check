@@ -254,6 +254,8 @@ export function Home({ mode }: HomeProps) {
 
           {mode === 'home' && <FeatureCarousel />}
 
+          {mode === 'home' && <ContactForm />}
+
           {mode === 'home' && <ProjectInfo />}
 
           {mode === 'home' && <ContactInfo />}
@@ -509,6 +511,94 @@ function FeatureCarousel() {
           />
         ))}
       </div>
+    </section>
+  );
+}
+
+// Contact-form section shown on the home view — name, email, and message
+// fields wired to local state, following the paper/ink styling of the page.
+function ContactForm() {
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [message, setMessage] = React.useState('');
+  const [sent, setSent] = React.useState(false);
+
+  const fieldStyle: React.CSSProperties = {
+    background: 'rgba(27,27,25,0.04)',
+    color: 'var(--fg-1)',
+    fontFamily: 'var(--font-sans)',
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSent(true);
+    setName('');
+    setEmail('');
+    setMessage('');
+  };
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Get in touch" count={0} />
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-3 rounded-lg p-5"
+        style={{
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Name
+          </span>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            className="h-9 rounded-md border-0 px-3 text-[13.5px] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Email
+          </span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="h-9 rounded-md border-0 px-3 text-[13.5px] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Message
+          </span>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="How can we help?"
+            rows={4}
+            className="resize-y rounded-md border-0 px-3 py-2 text-[13.5px] leading-[1.55] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <div className="flex items-center gap-3">
+          <Button type="submit" className="gap-2">
+            <Mail className="size-4" />
+            Send message
+          </Button>
+          {sent && (
+            <span className="text-[13px]" style={{ color: 'var(--fg-2)' }}>
+              Thanks — we&rsquo;ll be in touch.
+            </span>
+          )}
+        </div>
+      </form>
     </section>
   );
 }
