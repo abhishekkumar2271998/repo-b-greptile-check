@@ -6,7 +6,10 @@ import {
   ChevronRight,
   Copy,
   ExternalLink,
+  Globe,
   Loader2,
+  Mail,
+  Phone,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -781,9 +784,73 @@ function GeneralTab() {
           notes by an on-device model — nothing is ever uploaded to the cloud.
         </p>
       </div>
+
+      <SectionHeading>Contact</SectionHeading>
+      <div className="mb-5 flex flex-col gap-2" data-testid="contact-card">
+        {CONTACTS.map((c) => (
+          <a
+            key={c.label}
+            href={c.href}
+            className="flex items-center gap-3 rounded-[10px] p-3 transition-colors hover:bg-[color:var(--surface-hover)]"
+            style={{
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div
+              className="flex size-8 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'var(--surface-hover)', color: 'var(--fg-1)' }}
+            >
+              {c.icon}
+            </div>
+            <div className="min-w-0">
+              <div
+                className="text-[11px] font-medium uppercase"
+                style={{ letterSpacing: '0.06em', color: 'var(--fg-muted)' }}
+              >
+                {c.label}
+              </div>
+              <div
+                className="mt-0.5 text-[13px]"
+                style={{ color: 'var(--fg-1)' }}
+              >
+                {c.value}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
     </section>
   );
 }
+
+interface SettingsContact {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href: string;
+}
+
+const CONTACTS: SettingsContact[] = [
+  {
+    icon: <Mail size={15} />,
+    label: 'Email',
+    value: 'support@stenoai.app',
+    href: 'mailto:support@stenoai.app',
+  },
+  {
+    icon: <Phone size={15} />,
+    label: 'Phone',
+    value: '+1 (555) 010-2024',
+    href: 'tel:+15550102024',
+  },
+  {
+    icon: <Globe size={15} />,
+    label: 'Website',
+    value: 'stenoai.app',
+    href: 'https://stenoai.app',
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Transcription tab
