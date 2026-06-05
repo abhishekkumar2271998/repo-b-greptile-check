@@ -252,6 +252,8 @@ export function Home({ mode }: HomeProps) {
             )}
           </section>
 
+          {mode === 'home' && <FeatureCarousel />}
+
           {mode === 'home' && <ProjectInfo />}
 
           {mode === 'home' && <ContactInfo />}
@@ -399,6 +401,117 @@ const CONTACTS: Contact[] = [
     href: 'https://stenoai.app',
   },
 ];
+
+interface Slide {
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+}
+
+const CAROUSEL_SLIDES: Slide[] = [
+  {
+    icon: <Mic className="size-[18px]" />,
+    title: 'One-click capture',
+    body: 'Start recording any meeting instantly — or from anywhere with ⌘⇧R. Mic and system audio are captured together.',
+  },
+  {
+    icon: <FileText className="size-[18px]" />,
+    title: 'On-device transcription',
+    body: 'Whisper transcribes your audio locally. Nothing is uploaded — your conversations never leave your Mac.',
+  },
+  {
+    icon: <Sparkles className="size-[18px]" />,
+    title: 'Instant summaries',
+    body: 'A local model turns transcripts into clean notes and answers. Ask questions across every meeting you record.',
+  },
+  {
+    icon: <Search className="size-[18px]" />,
+    title: 'Search everything',
+    body: 'Find any moment across all your notes in seconds with fast, full-text search over your meeting history.',
+  },
+];
+
+// Feature carousel shown on the home view — a horizontally scrollable strip of
+// highlight cards. Uses scroll-snap and dot indicators driven purely by local
+// state, following the paper/ink styling of the page.
+function FeatureCarousel() {
+  const [active, setActive] = React.useState(0);
+  const trackRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollTo = (i: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.children[i] as HTMLElement | undefined;
+    if (card) track.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+    setActive(i);
+  };
+
+  const onScroll = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    setActive(Math.max(0, Math.min(CAROUSEL_SLIDES.length - 1, i)));
+  };
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Highlights" count={CAROUSEL_SLIDES.length} />
+      <div
+        ref={trackRef}
+        onScroll={onScroll}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        {CAROUSEL_SLIDES.map((slide) => (
+          <div
+            key={slide.title}
+            className="flex min-w-full shrink-0 snap-start items-start gap-4 rounded-lg p-5"
+            style={{
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div
+              className="flex size-9 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'var(--surface-hover)', color: 'var(--fg-1)' }}
+            >
+              {slide.icon}
+            </div>
+            <div className="min-w-0">
+              <h3
+                className="text-sm font-medium"
+                style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+              >
+                {slide.title}
+              </h3>
+              <p
+                className="mt-1 text-[13px] leading-[1.55]"
+                style={{ color: 'var(--fg-2)' }}
+              >
+                {slide.body}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-center gap-1.5">
+        {CAROUSEL_SLIDES.map((slide, i) => (
+          <button
+            key={slide.title}
+            type="button"
+            onClick={() => scrollTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            aria-current={i === active}
+            className="size-1.5 rounded-full transition-colors"
+            style={{
+              background: i === active ? 'var(--fg-1)' : 'var(--border-subtle)',
+            }}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 // About-the-project section shown on the home view — a short paragraph
 // describing what StenoAI is, following the paper/ink styling of the page.
