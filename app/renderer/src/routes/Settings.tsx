@@ -755,6 +755,32 @@ function GeneralTab() {
           disabled={dockIcon.data === undefined}
         />
       </SettingRow>
+
+      <SectionHeading>About</SectionHeading>
+      <div
+        className="mb-5 rounded-[10px] p-4"
+        style={{
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--border-subtle)',
+        }}
+        data-testid="about-card"
+      >
+        <div
+          className="text-[14px] font-medium"
+          style={{ color: 'var(--fg-1)', marginBottom: 4 }}
+        >
+          StenoAI
+        </div>
+        <p
+          className="text-[13px] leading-[1.55]"
+          style={{ color: 'var(--fg-2)' }}
+        >
+          A privacy-first meeting companion that records, transcribes, and
+          summarizes your conversations entirely on your own Mac. Audio is
+          captured locally, transcribed with Whisper, and turned into clean
+          notes by an on-device model — nothing is ever uploaded to the cloud.
+        </p>
+      </div>
     </section>
   );
 }
