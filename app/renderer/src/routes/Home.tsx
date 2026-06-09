@@ -254,6 +254,8 @@ export function Home({ mode }: HomeProps) {
 
           {mode === 'home' && <FeatureCarousel />}
 
+          {mode === 'home' && <TogglesSection />}
+
           {mode === 'home' && <ContactForm />}
 
           {mode === 'home' && <ProjectInfo />}
@@ -599,6 +601,100 @@ function ContactForm() {
           )}
         </div>
       </form>
+    </section>
+  );
+}
+
+interface ToggleItem {
+  key: string;
+  title: string;
+  body: string;
+  defaultOn: boolean;
+}
+
+const TOGGLES: ToggleItem[] = [
+  {
+    key: 'auto-transcribe',
+    title: 'Auto-transcribe recordings',
+    body: 'Start transcribing as soon as a recording finishes, without waiting for a manual step.',
+    defaultOn: true,
+  },
+  {
+    key: 'auto-summarize',
+    title: 'Auto-summarize transcripts',
+    body: 'Generate clean notes and summaries automatically once a transcript is ready.',
+    defaultOn: true,
+  },
+  {
+    key: 'launch-at-login',
+    title: 'Launch at login',
+    body: 'Open StenoAI automatically when you sign in to your Mac.',
+    defaultOn: false,
+  },
+];
+
+// Toggle section shown on the home view — a small set of preference switches
+// wired to local state, following the paper/ink styling of the page.
+function TogglesSection() {
+  const [state, setState] = React.useState<Record<string, boolean>>(() =>
+    Object.fromEntries(TOGGLES.map((t) => [t.key, t.defaultOn])),
+  );
+
+  const toggle = (key: string) =>
+    setState((prev: Record<string, boolean>) => ({ ...prev, [key]: !prev[key] }));
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Preferences" count={TOGGLES.length} />
+      <div className="flex flex-col gap-2">
+        {TOGGLES.map((t) => {
+          const on = state[t.key];
+          return (
+            <div
+              key={t.key}
+              className="flex items-start gap-4 rounded-lg p-4"
+              style={{
+                background: 'var(--surface-raised)',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              <div className="min-w-0 flex-1">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+                >
+                  {t.title}
+                </h3>
+                <p
+                  className="mt-1 text-[13px] leading-[1.55]"
+                  style={{ color: 'var(--fg-2)' }}
+                >
+                  {t.body}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={on}
+                aria-label={t.title}
+                onClick={() => toggle(t.key)}
+                className="relative inline-flex h-[22px] w-[38px] shrink-0 items-center rounded-full transition-colors"
+                style={{
+                  background: on ? 'var(--fg-1)' : 'var(--border-subtle)',
+                }}
+              >
+                <span
+                  className="inline-block size-[18px] rounded-full transition-transform"
+                  style={{
+                    background: 'var(--surface-raised)',
+                    transform: on ? 'translateX(18px)' : 'translateX(2px)',
+                  }}
+                />
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }
