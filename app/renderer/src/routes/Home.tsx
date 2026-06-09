@@ -252,6 +252,14 @@ export function Home({ mode }: HomeProps) {
             )}
           </section>
 
+          {mode === 'home' && <FeatureCarousel />}
+
+          {mode === 'home' && <TogglesSection />}
+
+          {mode === 'home' && <ContactForm />}
+
+          {mode === 'home' && <ProjectInfo />}
+
           {mode === 'home' && <ContactInfo />}
         </>
       )}
@@ -397,6 +405,328 @@ const CONTACTS: Contact[] = [
     href: 'https://stenoai.app',
   },
 ];
+
+interface Slide {
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+}
+
+const CAROUSEL_SLIDES: Slide[] = [
+  {
+    icon: <Mic className="size-[18px]" />,
+    title: 'One-click capture',
+    body: 'Start recording any meeting instantly — or from anywhere with ⌘⇧R. Mic and system audio are captured together.',
+  },
+  {
+    icon: <FileText className="size-[18px]" />,
+    title: 'On-device transcription',
+    body: 'Whisper transcribes your audio locally. Nothing is uploaded — your conversations never leave your Mac.',
+  },
+  {
+    icon: <Sparkles className="size-[18px]" />,
+    title: 'Instant summaries',
+    body: 'A local model turns transcripts into clean notes and answers. Ask questions across every meeting you record.',
+  },
+  {
+    icon: <Search className="size-[18px]" />,
+    title: 'Search everything',
+    body: 'Find any moment across all your notes in seconds with fast, full-text search over your meeting history.',
+  },
+];
+
+// Feature carousel shown on the home view — a horizontally scrollable strip of
+// highlight cards. Uses scroll-snap and dot indicators driven purely by local
+// state, following the paper/ink styling of the page.
+function FeatureCarousel() {
+  const [active, setActive] = React.useState(0);
+  const trackRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollTo = (i: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.children[i] as HTMLElement | undefined;
+    if (card) track.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
+    setActive(i);
+  };
+
+  const onScroll = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    setActive(Math.max(0, Math.min(CAROUSEL_SLIDES.length - 1, i)));
+  };
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Highlights" count={CAROUSEL_SLIDES.length} />
+      <div
+        ref={trackRef}
+        onScroll={onScroll}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        {CAROUSEL_SLIDES.map((slide) => (
+          <div
+            key={slide.title}
+            className="flex min-w-full shrink-0 snap-start items-start gap-4 rounded-lg p-5"
+            style={{
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-subtle)',
+            }}
+          >
+            <div
+              className="flex size-9 shrink-0 items-center justify-center rounded-md"
+              style={{ background: 'var(--surface-hover)', color: 'var(--fg-1)' }}
+            >
+              {slide.icon}
+            </div>
+            <div className="min-w-0">
+              <h3
+                className="text-sm font-medium"
+                style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+              >
+                {slide.title}
+              </h3>
+              <p
+                className="mt-1 text-[13px] leading-[1.55]"
+                style={{ color: 'var(--fg-2)' }}
+              >
+                {slide.body}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-center gap-1.5">
+        {CAROUSEL_SLIDES.map((slide, i) => (
+          <button
+            key={slide.title}
+            type="button"
+            onClick={() => scrollTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            aria-current={i === active}
+            className="size-1.5 rounded-full transition-colors"
+            style={{
+              background: i === active ? 'var(--fg-1)' : 'var(--border-subtle)',
+            }}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// Contact-form section shown on the home view — name, email, and message
+// fields wired to local state, following the paper/ink styling of the page.
+function ContactForm() {
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [message, setMessage] = React.useState('');
+  const [sent, setSent] = React.useState(false);
+
+  const fieldStyle: React.CSSProperties = {
+    background: 'rgba(27,27,25,0.04)',
+    color: 'var(--fg-1)',
+    fontFamily: 'var(--font-sans)',
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSent(true);
+    setName('');
+    setEmail('');
+    setMessage('');
+  };
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Get in touch" count={0} />
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-3 rounded-lg p-5"
+        style={{
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Name
+          </span>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+            className="h-9 rounded-md border-0 px-3 text-[13.5px] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Email
+          </span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="h-9 rounded-md border-0 px-3 text-[13.5px] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-[12px] font-medium tracking-[0.02em]" style={{ color: 'var(--fg-muted)' }}>
+            Message
+          </span>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="How can we help?"
+            rows={4}
+            className="resize-y rounded-md border-0 px-3 py-2 text-[13.5px] leading-[1.55] outline-none transition-shadow focus:shadow-[inset_0_0_0_1px_hsl(var(--border))]"
+            style={fieldStyle}
+          />
+        </label>
+        <div className="flex items-center gap-3">
+          <Button type="submit" className="gap-2">
+            <Mail className="size-4" />
+            Send message
+          </Button>
+          {sent && (
+            <span className="text-[13px]" style={{ color: 'var(--fg-2)' }}>
+              Thanks — we&rsquo;ll be in touch.
+            </span>
+          )}
+        </div>
+      </form>
+    </section>
+  );
+}
+
+interface ToggleItem {
+  key: string;
+  title: string;
+  body: string;
+  defaultOn: boolean;
+}
+
+const TOGGLES: ToggleItem[] = [
+  {
+    key: 'auto-transcribe',
+    title: 'Auto-transcribe recordings',
+    body: 'Start transcribing as soon as a recording finishes, without waiting for a manual step.',
+    defaultOn: true,
+  },
+  {
+    key: 'auto-summarize',
+    title: 'Auto-summarize transcripts',
+    body: 'Generate clean notes and summaries automatically once a transcript is ready.',
+    defaultOn: true,
+  },
+  {
+    key: 'launch-at-login',
+    title: 'Launch at login',
+    body: 'Open StenoAI automatically when you sign in to your Mac.',
+    defaultOn: false,
+  },
+];
+
+// Toggle section shown on the home view — a small set of preference switches
+// wired to local state, following the paper/ink styling of the page.
+function TogglesSection() {
+  const [state, setState] = React.useState<Record<string, boolean>>(() =>
+    Object.fromEntries(TOGGLES.map((t) => [t.key, t.defaultOn])),
+  );
+
+  const toggle = (key: string) =>
+    setState((prev: Record<string, boolean>) => ({ ...prev, [key]: !prev[key] }));
+
+  return (
+    <section className="mt-10">
+      <SectionHead title="Preferences" count={TOGGLES.length} />
+      <div className="flex flex-col gap-2">
+        {TOGGLES.map((t) => {
+          const on = state[t.key];
+          return (
+            <div
+              key={t.key}
+              className="flex items-start gap-4 rounded-lg p-4"
+              style={{
+                background: 'var(--surface-raised)',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              <div className="min-w-0 flex-1">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--fg-1)', fontFamily: 'var(--font-sans)' }}
+                >
+                  {t.title}
+                </h3>
+                <p
+                  className="mt-1 text-[13px] leading-[1.55]"
+                  style={{ color: 'var(--fg-2)' }}
+                >
+                  {t.body}
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={on}
+                aria-label={t.title}
+                onClick={() => toggle(t.key)}
+                className="relative inline-flex h-[22px] w-[38px] shrink-0 items-center rounded-full transition-colors"
+                style={{
+                  background: on ? 'var(--fg-1)' : 'var(--border-subtle)',
+                }}
+              >
+                <span
+                  className="inline-block size-[18px] rounded-full transition-transform"
+                  style={{
+                    background: 'var(--surface-raised)',
+                    transform: on ? 'translateX(18px)' : 'translateX(2px)',
+                  }}
+                />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// About-the-project section shown on the home view — a short paragraph
+// describing what StenoAI is, following the paper/ink styling of the page.
+function ProjectInfo() {
+  return (
+    <section className="mt-10">
+      <SectionHead title="About the project" count={0} />
+      <div
+        className="rounded-lg p-5"
+        style={{
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--border-subtle)',
+        }}
+      >
+        <p
+          className="text-[13.5px] leading-[1.65]"
+          style={{ color: 'var(--fg-2)' }}
+        >
+          StenoAI is a privacy-first meeting companion that records, transcribes,
+          and summarizes your conversations entirely on your own Mac. Audio is
+          captured locally, transcribed with Whisper, and turned into clean notes
+          and answers by an on-device model — nothing is ever uploaded to the
+          cloud. The result is a fast, fully offline way to capture beautiful
+          notes from any meeting while keeping your data in your hands.
+        </p>
+      </div>
+    </section>
+  );
+}
 
 // Contact section shown on the home view — a quiet card listing ways to reach
 // support, following the same paper/ink styling as the rest of the home page.
